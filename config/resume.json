@@ -1,0 +1,12 @@
+{
+    "model": {
+        "fpath": "_data/models/ellipseflow5/architectures/FvgnD(0811113053)/checkpoint-280(latest).pth"
+    },
+    "settings": {
+        "machine": "csc",
+        "device": "cuda:1",
+        "multi_gpu": false,
+        "num_gpus": null,
+        "pin_memory": true
+    }
+}

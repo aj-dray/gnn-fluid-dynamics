@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      nut;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    // Define your boundary conditions here
+    // For example:
+    walls
+    {
+        type            nutkWallFunction;
+        value           uniform 0;
+    }
+    
+    inlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    
+    outlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    frontAndBack
+    {
+        type            empty;
+<<<<<<< Updated upstream:generate/openfoam/turbulent/0/nut
+    }
+    obstacle
+    {
+        type            nutkWallFunction;
+        value           uniform 0;
+=======
+        physicalType    empty;
+        nFaces          25304;
+        startFace       18741;
+    }
+    walls
+    {
+        type            wall;
+        physicalType    wall;
+        nFaces          74;
+        startFace       44045;
+    }
+    outlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          184;
+        startFace       44119;
+    }
+    inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          184;
+        startFace       44303;
+    }
+    obstacle
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          32;
+        startFace       44487;
+>>>>>>> Stashed changes:generate/openfoam/laminar/constant/polyMesh/boundary
+    }
+    defaultFaces
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

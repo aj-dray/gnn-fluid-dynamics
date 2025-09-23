@@ -1,0 +1,93 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           volVectorField;
+    object          U;
+}
+
+dimensions      [ 0 1 -1 0 0 0 0 ];
+
+internalField   #codeStream
+{
+    codeInclude
+    #{
+        #include "fvCFD.H"
+        #include <cmath>
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+
+    codeLibs
+    #{
+        -lmeshTools \
+        -lfiniteVolume
+    #};
+
+    code
+    #{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+        vectorField U(mesh.nCells());
+
+        const scalar pi = constant::mathematical::pi;
+        const scalar t = 0.0;  // Initial time
+
+        forAll(U, i)
+        {
+            const scalar x = mesh.C()[i].x();
+            const scalar y = mesh.C()[i].y();
+
+            // Manufactured solution with multiple frequencies
+            // u = sin(2πx/L) * cos(3πy/L) * exp(-t) + 0.3*sin(4πx/L) * sin(πy/L) * exp(-t)
+            // v = -cos(πx/L) * sin(2πy/L) * exp(-t) + 0.2*cos(3πx/L) * cos(4πy/L) * exp(-t)
+
+            U[i].x() = sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                     + 0.3*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+            U[i].y() = -cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                     + 0.2*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+            U[i].z() = 0.0;
+        }
+
+        U.writeEntry("", os);
+    #};
+};
+
+boundaryField
+{
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    bottom
+    {
+        type            cyclic;
+    }
+    top
+    {
+        type            cyclic;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

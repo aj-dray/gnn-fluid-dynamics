@@ -1,0 +1,14 @@
+numpy
+matplotlib
+h5py
+gmsh
+meshio
+wandb
+tqdm
+pyvista
+pandas
+scipy
+
+# pip install torch==2.6.0+cu118 --index-url https://download.pytorch.org/whl/cu118
+# pip install torch-scatter==2.1.2+pt26cu118 -f https://data.pyg.org/whl/torch-2.6.0+cu118.html
+# torch-geometric==2.6.1

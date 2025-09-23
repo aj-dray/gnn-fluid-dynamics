@@ -1,0 +1,16 @@
+{
+    "dataset": {
+        "module": "datasets.OpenFoam",
+        "name": "DataSet_OF",
+        "dpath": "vtk/ellipseflow5"
+    },
+    "settings": {
+        "machine": "mac",
+        "device": "cpu"
+    },
+    "preproc": {
+        "h5": true,
+        "h5_fpath": "h5/ellipseflow5",
+        "stats": false
+    }
+}

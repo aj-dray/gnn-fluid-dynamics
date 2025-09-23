@@ -1,0 +1,31 @@
+{
+    "logging": {
+        "project": "",
+        "group": "",
+        "name": "",
+        "notes": "best"
+    },
+    "dataset": {
+        "module": "datasets.OpenFoam",
+        "name": "DataSet_OF",
+        "dpath": "h5/ellipseflow5"
+    },
+    "model": {
+        "fpath": "_data/models/ellipseflow5/conservative/ConservativeI(0802225824)/checkpoint-520(best).pth" 
+    },
+    "rollout": {
+        "data_subset": "valid",
+        "data_timestep_range": [10, 686],
+        "data_sim_limit": 5,
+        "batch_size": 5,
+        "num_workers": 5,
+        "save_frequency": 1,
+        "persistent_workers": true,
+        "prefetch_factor": 2
+    },
+    "settings": {
+        "machine": "csc",
+        "device": "cuda:0",
+        "pin_memory": true
+    }
+}

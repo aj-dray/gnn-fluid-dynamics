@@ -1,0 +1,87 @@
+{
+    "logging": {
+        "project": "ellipseflow5",
+        "group": "architectures",
+        "name": "FluxD",
+        "notes": "",
+        "save_overwrite": true,
+        "save_frequency": 20,
+        "loss_frequency": null,
+        "valid_frequency": 20,
+        "use_wandb": true,
+        "use_tensorboard": false,
+        "is_debug": false
+    },
+    "dataset": {
+        "module": "datasets.OpenFoam",
+        "name": "DataSet_OF",
+        "dpath": "h5/ellipseflow5",
+        "stats_recompute": false,
+        "stats_fpath": "../project/_data/preproc/ellipseflow5-2.json",
+        "grad_weights_recompute": false,
+        "shuffle": true
+    },
+    "model": {
+        "module": "models.Flux",
+        "name": "FluxD",
+        "hidden_width": 128,
+        "mp_num": 15,
+        "cell_grad_weights_order": null,
+        "face_grad_weights_order": null,
+        "timestep_stride": 1,
+        "fpath": null,
+        "bundle_size": null
+    },
+    "settings": {
+        "machine": "csc",
+        "device": "cuda:1",
+        "multi_gpu": false,
+        "num_gpus": null,
+        "pin_memory": true,
+        "random_seed": 2
+    },
+    "training": {
+        "data_subset": "train",
+        "data_sim_limit": 50,
+        "data_timestep_range": [0, 400],
+        "epochs": 30,
+        "batch_size": 4,
+        "mini_epoch_size": 1000,
+        "optimizer_name": "AdamW",
+        "clip_grad_norm": 10,
+        "lr_max": 1e-3,
+        "lr_min": 1e-6,
+        "lr_class": "CosineAnnealingTwoPhase",
+        "lr_wu": 0.02,
+        "lr_wu_gamma": 0.04,
+        "lr_ms1": 0.3,
+        "lr_ms1_gamma": null,
+        "lr_ms2": 0.6,
+        "lr_ms2_gamma": 0.1,
+        "lr_ms3": 0.98,
+        "noise_std_norm": 0.045,
+        "pushforward_factor": null,
+        "dropout_rate": 0.0,
+        "loss_weights": {
+            "continuity": 0,
+            "cell_velocity_change": 10,
+            "cell_pressure": 1,
+            "face_velocity": 1,
+            "face_flux": 1,
+            "face_pressure": 1
+        },
+        "num_workers": 4,
+        "persistent_workers": true,
+        "prefetch_factor": 2
+    },
+    "rollout": {
+        "data_subset": "valid",
+        "data_sim_limit": 5,
+        "data_timestep_range": [0, 686],
+        "batch_size": 5,
+        "num_workers": 5,
+        "persistent_workers": true,
+        "prefetch_factor": 2,
+        "snapshot_indices": [400, 600]
+    }
+}

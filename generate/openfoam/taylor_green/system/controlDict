@@ -1,0 +1,97 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           dictionary;
+    object          controlDict;
+}
+
+application     pimpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         0.5;
+
+deltaT          0.0001;
+
+writeControl    runTime;
+
+writeInterval   0.1;
+
+// writeFields     ( U p );
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+timeFormat      general;
+
+timePrecision   8;
+
+runTimeModifiable false;
+
+adjustTimeStep  false;
+
+maxCo           0.1; // or another value you prefer
+
+// functions
+// {
+//     continuityResidual
+//     {
+//         type            derivative;
+//         libs            ("libfieldFunctionObjects.so");
+//         enabled         true;
+
+//         // write out every time-step
+//         writeControl    timeStep;
+//         writeInterval   1;
+
+//         // do not print its own log unless you want to
+//         log             false;
+
+//         fields
+//         (
+//             continuity
+//             {
+//                 operation   divergence;    // ∇·(...)
+//                 field       phi;           // the surfaceScalarField
+//                 name        continuity;    // name of the output volScalarField
+//             }
+//         );
+//     }
+// }
+
+// functions
+// {
+
+
+//     phi
+//     {
+//         type            surfaceFieldValue;
+//         enabled         true;
+//         outputControl   timeStep;
+//         outputInterval  10;
+//         surfaceFormat   raw;
+//         fields
+//         (
+//             phi
+//         );
+//     }
+// }
+
+
+// ************************************************************************* //

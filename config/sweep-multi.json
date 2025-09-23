@@ -1,0 +1,29 @@
+{
+    "base_config": "../project/config/train-of-probe.json",
+    "parameters": {
+        "training.batch_size": [2, 5, 10, 20, 40],
+        "training.lr_max": [0.75e-3, 1e-3, 1.4e-3, 2e-3, 2.8e-3]
+    },
+    "combinations": [
+        {
+            "training.batch_size": 2,
+            "training.lr_max": 0.00075
+        },
+        {
+            "training.batch_size": 5,
+            "training.lr_max": 0.001
+        },
+        {
+            "training.batch_size": 10,
+            "training.lr_max": 0.0014
+        },
+        {
+            "training.batch_size": 20,
+            "training.lr_max": 0.002
+        },
+        {
+            "training.batch_size": 40,
+            "training.lr_max": 0.0028
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+{
+    "base_config": "../project/config/train-of-probe.json",
+    "sweep_parameter": "training.noise_std_norm",
+    "sweep_values": [0.0, 0.015, 0.03, 0.045, 0.06]
+}

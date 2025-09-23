@@ -1,0 +1,115 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           dictionary;
+    object          controlDict;
+}
+
+application     pimpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         0.5;
+
+deltaT          0.0001;
+
+writeControl    runTime;
+
+writeInterval   0.1;
+
+// writeFields     ( U p );
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  12;
+
+timeFormat      general;
+
+timePrecision   8;
+
+runTimeModifiable false;
+
+adjustTimeStep  false;
+
+maxCo           0.1; // or another value you prefer
+
+functions
+{
+    error
+    {
+        type            coded;
+        libs            ("libutilityFunctionObjects.so");
+        name            errorNorms;
+        writeControl    timeStep;
+        writeInterval   1;
+
+        codeExecute
+        #{
+            const volVectorField& U = mesh().lookupObject<volVectorField>("U");
+            const volScalarField& p = mesh().lookupObject<volScalarField>("p");
+            const scalar t = mesh().time().value();
+            const scalar pi = constant::mathematical::pi;
+
+            scalar L2_U = 0;
+            scalar Linf_U = 0;
+            scalar L2_p = 0;
+            scalar Linf_p = 0;
+
+            forAll(U, cellI)
+            {
+                const scalar x = mesh().C()[cellI].x();
+                const scalar y = mesh().C()[cellI].y();
+
+                // Analytical solution
+                scalar u_exact = sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                               + 0.3*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+                scalar v_exact = -cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                               + 0.2*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+                scalar p_exact = sin(2.0*pi*x) * sin(2.0*pi*y) * exp(-2.0*t)
+                               + 0.5*cos(3.0*pi*x) * sin(pi*y) * exp(-2.0*t);
+
+                // Errors
+                scalar u_err = mag(U[cellI].x() - u_exact);
+                scalar v_err = mag(U[cellI].y() - v_exact);
+                scalar vel_err = sqrt(u_err*u_err + v_err*v_err);
+                scalar p_err = mag(p[cellI] - p_exact);
+
+                L2_U += vel_err*vel_err*mesh().V()[cellI];
+                L2_p += p_err*p_err*mesh().V()[cellI];
+
+                Linf_U = max(Linf_U, vel_err);
+                Linf_p = max(Linf_p, p_err);
+            }
+
+            reduce(L2_U, sumOp<scalar>());
+            reduce(L2_p, sumOp<scalar>());
+            reduce(Linf_U, maxOp<scalar>());
+            reduce(Linf_p, maxOp<scalar>());
+
+            L2_U = sqrt(L2_U);
+            L2_p = sqrt(L2_p);
+
+            Info<< "Time = " << t
+                << " : L2 errors: U = " << L2_U << ", p = " << L2_p
+                << " : Linf errors: U = " << Linf_U << ", p = " << Linf_p << endl;
+        #};
+    }
+}
+
+
+// ************************************************************************* //

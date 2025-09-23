@@ -1,0 +1,88 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2206                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   #codeStream
+{
+    codeInclude
+    #{
+        #include "fvCFD.H"
+        #include <cmath>
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+
+    codeLibs
+    #{
+        -lmeshTools \
+        -lfiniteVolume
+    #};
+
+    code
+    #{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+        scalarField p(mesh.nCells());
+
+        const scalar pi = constant::mathematical::pi;
+        const scalar t = 0.0;  // Initial time
+
+        forAll(p, i)
+        {
+            const scalar x = mesh.C()[i].x();
+            const scalar y = mesh.C()[i].y();
+
+            // Pressure field (chosen to be compatible with continuity)
+            p[i] = sin(2.0*pi*x) * sin(2.0*pi*y) * exp(-2.0*t)
+                 + 0.5*cos(3.0*pi*x) * sin(pi*y) * exp(-2.0*t);
+        }
+
+        p.writeEntry("", os);
+    #};
+};
+
+boundaryField
+{
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    bottom
+    {
+        type            cyclic;
+    }
+    top
+    {
+        type            cyclic;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+
+// ************************************************************************* //

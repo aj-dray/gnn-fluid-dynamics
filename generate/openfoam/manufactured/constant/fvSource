@@ -1,0 +1,117 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2206                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// File: constant/fvSource
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSource;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Source term for manufactured solution
+momentumSource
+{
+    type            coded;
+    name            manufacturedSource;
+    active          true;
+    selectionMode   all;
+
+    codeInclude
+    #{
+        #include "fvCFD.H"
+        #include <cmath>
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+
+    codeLibs
+    #{
+        -lmeshTools \
+        -lfiniteVolume
+    #};
+
+    codeAddSup
+    #{
+        const Time& time = mesh().time();
+        const scalar t = time.value();
+        const scalar nu = 0.01;
+        const scalar pi = constant::mathematical::pi;
+
+        vectorField& source = eqn.source();
+        const scalarField& V = mesh().V();
+        const vectorField& C = mesh().C();
+
+        forAll(C, i)
+        {
+            const scalar x = C[i].x();
+            const scalar y = C[i].y();
+
+            // Analytical expressions for source terms
+            // These come from substituting the manufactured solution into
+            // the Navier-Stokes equations
+
+            // Time derivatives
+            scalar dudt = -sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                         - 0.3*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+            scalar dvdt = cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                         - 0.2*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+
+            // Convective terms (u·∇u)
+            scalar u = sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                     + 0.3*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+            scalar v = -cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                     + 0.2*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+
+            scalar dudx = 2.0*pi*cos(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                        + 1.2*pi*cos(4.0*pi*x) * sin(pi*y) * exp(-t);
+            scalar dudy = -3.0*pi*sin(2.0*pi*x) * sin(3.0*pi*y) * exp(-t)
+                        + 0.3*pi*sin(4.0*pi*x) * cos(pi*y) * exp(-t);
+
+            scalar dvdx = pi*sin(pi*x) * sin(2.0*pi*y) * exp(-t)
+                        - 0.6*pi*sin(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+            scalar dvdy = -2.0*pi*cos(pi*x) * cos(2.0*pi*y) * exp(-t)
+                        - 0.8*pi*cos(3.0*pi*x) * sin(4.0*pi*y) * exp(-t);
+
+            scalar convU = u*dudx + v*dudy;
+            scalar convV = u*dvdx + v*dvdy;
+
+            // Pressure gradient
+            scalar dpdx = 2.0*pi*cos(2.0*pi*x) * sin(2.0*pi*y) * exp(-2.0*t)
+                        - 1.5*pi*sin(3.0*pi*x) * sin(pi*y) * exp(-2.0*t);
+            scalar dpdy = 2.0*pi*sin(2.0*pi*x) * cos(2.0*pi*y) * exp(-2.0*t)
+                        + 0.5*pi*cos(3.0*pi*x) * cos(pi*y) * exp(-2.0*t);
+
+            // Viscous terms (ν∇²u)
+            scalar d2udx2 = -4.0*pi*pi*sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                          - 4.8*pi*pi*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+            scalar d2udy2 = -9.0*pi*pi*sin(2.0*pi*x) * cos(3.0*pi*y) * exp(-t)
+                          - 0.3*pi*pi*sin(4.0*pi*x) * sin(pi*y) * exp(-t);
+
+            scalar d2vdx2 = -pi*pi*cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                          - 1.8*pi*pi*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+            scalar d2vdy2 = -4.0*pi*pi*cos(pi*x) * sin(2.0*pi*y) * exp(-t)
+                          - 3.2*pi*pi*cos(3.0*pi*x) * cos(4.0*pi*y) * exp(-t);
+
+            scalar viscU = nu*(d2udx2 + d2udy2);
+            scalar viscV = nu*(d2vdx2 + d2vdy2);
+
+            // Source = -(∂u/∂t + u·∇u + ∇p - ν∇²u)
+            source[i].x() -= (dudt + convU + dpdx - viscU) * V[i];
+            source[i].y() -= (dvdt + convV + dpdy - viscV) * V[i];
+            source[i].z() = 0.0;
+        }
+    #};
+}
+
+// ************************************************************************* //

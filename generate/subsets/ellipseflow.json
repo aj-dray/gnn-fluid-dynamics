@@ -1,0 +1,32 @@
+{
+  "train": [
+    "mesh_62",
+    "mesh_85",
+    "mesh_113",
+    "mesh_60",
+    "mesh_70",
+    "mesh_33",
+    "mesh_100",
+    "mesh_77",
+    "mesh_31",
+    "mesh_16",
+    "mesh_98",
+    "mesh_48",
+    "mesh_103",
+    "mesh_115",
+    "mesh_84",
+    "mesh_117",
+    "mesh_5",
+    "mesh_1",
+    "mesh_38",
+    "mesh_15"
+  ],
+  "valid": [
+    "mesh_73",
+    "mesh_42"
+  ],
+  "test": [
+    "mesh_10",
+    "mesh_72"
+  ]
+}
