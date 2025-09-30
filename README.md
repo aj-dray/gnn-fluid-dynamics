@@ -83,12 +83,12 @@ Additionally, lines 163 and 175 will need to be set to the desired wandb project
 
 ## Model Architectures
 
-All models written as PyG modules. The project implements several neural network architectures for fluid dynamics:
-- **FVGN** (`models/Fvgn.py`) - Finite Volume Graph Network ()
-- **MGN** (`models/Mgn.py`) - MeshGraphNet-based approach (FVGN-Direct in report)
+All models written as PyG modules. The project implements several neural network architectures for fluid dynamics, based on the work of [Pfaff et al.](https://doi.org/10.48550/arXiv.2010.03409) on [MeshGraphNets](https://github.com/google-deepmind/deepmind-research/tree/master/meshgraphnets) and, more recently, by [Li et al.](https://doi.org/10.48550/arXiv.2309.10050) on [Finite-Volume-Graph-Network](https://github.com/Litianyu141/Finite-Volume-Graph-Network).
+- **FVGN** (`models/Fvgn.py`) - Finite Volume Graph Network (FVGN)
+- **MGN** (`models/Mgn.py`) - Hybrid FVGN-MeshGraphNet approach (FVGN-Direct in report)
 - **Flux** (`models/Flux.py`) - Utilises face flux directly (FVGN-Flux in report)
 - **Conservative** (`models/Conservative.py`) - FVM-inspired message passing
 - **VertPot** (`models/VertPot.py`) - Uses potential at vertex to contruct conservative face fluxes
 - **StreamFunc** (`models/StreamFunc.py`) - Constructs velocity from streamfunction
 
-Several variants of each architecture may exist, labelled A through to Z.
+Several variants of each architecture may exist, labelled A through to Z. 
